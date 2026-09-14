@@ -70,7 +70,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - ./src/frontend/public:/var/www
       - ./aulas:/var/www/aulas
