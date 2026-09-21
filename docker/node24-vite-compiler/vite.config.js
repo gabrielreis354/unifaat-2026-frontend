@@ -23,17 +23,15 @@ function copyStaticAssets(root, outDir, items) {
     }
 }
 
+// Vite.config dedicado ao container do compilador: aqui "resources" e
+// "public" são pastas irmãs, direto em /app (ver Dockerfile ao lado),
+// diferente do vite.config.js principal (usado no HMR local), onde tudo
+// fica aninhado dentro de frontend/.
 export default defineConfig({
-    root: 'frontend/resources',
+    root: 'resources',
     plugins: [
-        copyStaticAssets('frontend/resources', '../public', ['404.html', 'example.json', 'img'])
+        copyStaticAssets('resources', '../public', ['404.html', 'example.json', 'img'])
     ],
-    server: {
-        open: (process.env.IS_DOCKER !== "true"),
-        hmr: true,
-        host: true,
-        port: (process.env.IS_DOCKER == "true") ? 5172 : 5173,
-    },
     resolve: {
         alias: {
             '@fa': path.resolve(__dirname, 'node_modules/@fortawesome/fontawesome-free')
@@ -45,9 +43,9 @@ export default defineConfig({
         manifest: true,
         rollupOptions: {
             input: [
-                "./frontend/resources/index.html",
-                "./frontend/resources/login.html",
-                "./frontend/resources/tasks.html"
+                "./resources/index.html",
+                "./resources/login.html",
+                "./resources/tasks.html"
             ],
             output: {
                 assetFileNames: 'src/[name].[hash][extname]',
