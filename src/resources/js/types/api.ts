@@ -65,3 +65,16 @@ export interface AuthCheckResult {
   authenticated: boolean;
   idUser?: number;
 }
+
+// ── Busca de usuários (POST /users/search) ──────────────────
+
+/** Filtros aceitos pela busca; cada campo é opcional e vira um LIKE no Elasticsearch. */
+export interface UserSearchFilters {
+  name?: string;
+  email?: string;
+  job_title?: string;
+  bio?: string;
+  city?: string;
+  state?: string;
+  is_active?: boolean;
+}
