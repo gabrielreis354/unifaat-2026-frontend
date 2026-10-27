@@ -19,7 +19,7 @@ export function TaskForm({ onAdd }: Props) {
   }
 
   return (
-    <div>
+    <div className="form">
       <input
         type="text"
         value={name}

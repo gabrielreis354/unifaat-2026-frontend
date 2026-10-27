@@ -16,17 +16,13 @@ export function TaskItem({ task, onToggle, onDelete }: Props) {
   }
 
   return (
-    <li>
-      <span
-        onClick={handleToggle}
-        style={{
-          cursor: "pointer",
-          textDecoration: task.isDone ? "line-through" : "none",
-        }}
-      >
+    <li className={task.isDone ? "item item--done" : "item"}>
+      <span className="item__name" onClick={handleToggle}>
         {task.name}
       </span>
-      <button onClick={handleDelete}>Excluir</button>
+      <button className="item__delete" onClick={handleDelete}>
+        Excluir
+      </button>
     </li>
   )
 }

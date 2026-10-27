@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { FilterButton } from "./components/FilterButton"
 import { TaskForm } from "./components/TaskForm"
 import { TaskList } from "./components/TaskList"
 import type { Filter, Task } from "./types"
@@ -41,21 +42,21 @@ function App() {
   const pendingCount = tasks.filter((task) => !task.isDone).length
 
   return (
-    <main>
+    <main className="card">
       <h1>To-do</h1>
       <TaskForm onAdd={handleAdd} />
-      <div>
+      <div className="filters">
         {FILTERS.map(({ value, label }) => (
-          <button
+          <FilterButton
             key={value}
-            onClick={() => setFilter(value)}
-            disabled={filter === value}
-          >
-            {label}
-          </button>
+            value={value}
+            label={label}
+            isActive={filter === value}
+            onSelect={setFilter}
+          />
         ))}
       </div>
-      <p>{pendingCount} pendente(s)</p>
+      <p className="counter">{pendingCount} pendente(s)</p>
       <TaskList
         tasks={visibleTasks}
         onToggle={handleToggle}

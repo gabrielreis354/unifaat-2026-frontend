@@ -8,10 +8,10 @@ type Props = {
 }
 
 export function TaskList({ tasks, onToggle, onDelete }: Props) {
-  if (tasks.length === 0) return <p>Nenhuma task</p>
+  if (tasks.length === 0) return <p className="empty">Nenhuma task</p>
 
   return (
-    <ul>
+    <ul className="list">
       {tasks.map((task) => (
         <TaskItem
           key={task.id}
