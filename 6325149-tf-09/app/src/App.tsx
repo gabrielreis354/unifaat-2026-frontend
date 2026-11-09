@@ -12,10 +12,17 @@ function App() {
 
     return (
         <main>
-            <h1>Usuários e Tasks</h1>
+            <header>
+                <h1>Usuários e Tasks</h1>
+                <p className="tagline">Arquivos da Aliança Rebelde</p>
+            </header>
             <div className="columns">
                 <UserList selectedId={selectedUser?.id ?? null} onChoose={handleChoose} />
-                {selectedUser !== null && <UserTasks key={selectedUser.id} user={selectedUser} />}
+                {selectedUser === null ? (
+                    <p className="empty">Escolha um usuário para consultar as tasks.</p>
+                ) : (
+                    <UserTasks key={selectedUser.id} user={selectedUser} />
+                )}
             </div>
         </main>
     )
