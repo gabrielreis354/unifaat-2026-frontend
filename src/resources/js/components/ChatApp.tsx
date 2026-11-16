@@ -3,15 +3,16 @@ import type { ChangeEvent, FormEvent, MouseEvent } from "react"
 import { io } from "socket.io-client"
 import type { Socket } from "socket.io-client"
 import { ROOMS } from "../types/chat"
+import { findAttack } from "./chatAttacks"
 import type { ChatFeed, ChatFeedItem, ChatImage, ChatJoin, ChatLeft, ChatMessage, ChatTyping, OnlineUser, Room } from "../types/chat"
 
 // Os botões de reação: clicar manda o emoji como mensagem
 const EMOJIS = [
-    { emoji: "🔥", label: "fogo" },
-    { emoji: "💣", label: "bomba" },
-    { emoji: "😉", label: "piscar" },
-    { emoji: "💧", label: "água" },
-    { emoji: "🎉", label: "festa" },
+    { emoji: "🔥", label: "Katon: Goukakyuu no Jutsu!" },
+    { emoji: "💣", label: "Arte é uma explosão! (Deidara)" },
+    { emoji: "😉", label: "Piscadinha de protagonista" },
+    { emoji: "💧", label: "Suiton: Suiryuudan no Jutsu!" },
+    { emoji: "🎉", label: "Genki Dama da festa" },
 ]
 
 const MAX_IMAGE_BYTES = 500 * 1024
@@ -286,12 +287,14 @@ export function ChatApp() {
     }
 
     const roomFeed = feed[room]
+    const powerLevel = online.length * 3000
+    const isOver9000 = powerLevel > 9000
     const statusClass = isConnected ? "text-bg-success" : "text-bg-secondary"
     const statusLabel = isConnected ? "conectado" : "conectando..."
 
     return (
         <>
-        <div className="card">
+        <div className={`card room-${room}`}>
             <div className="card-header d-flex justify-content-between align-items-center">
                 <strong>Sala #{room} · {name}</strong>
                 <span className={`badge ${statusClass}`}>{statusLabel}</span>
@@ -352,7 +355,7 @@ export function ChatApp() {
                         return (
                             <div key={`image-${image.sentAt}-${image.name}-${image.filename}`} className={`d-flex flex-column ${alignImage} mb-2`}>
                                 <small className="text-muted">{isMineImage ? "você" : image.name} enviou uma imagem · {formatTime(image.sentAt)}</small>
-                                <img className="rounded-3 border" src={image.thumb} alt={image.filename} style={{ maxWidth: "75%" }} />
+                                <img className="chat-image rounded-3 border" src={image.thumb} alt={image.filename} style={{ maxWidth: "75%" }} />
                             </div>
                         )
                     }
@@ -363,11 +366,15 @@ export function ChatApp() {
                     const bubble = isMine ? "bg-primary text-white" : "bg-light"
                     const isEmoji = EMOJIS.some(emojiItem => emojiItem.emoji === message.text)
                     const size = isEmoji ? "fs-1" : ""
+                    const attack = findAttack(message.text)
+                    const attackClass = attack ? `has-attack-${attack.kind}` : ""
+                    const mineClass = isMine ? "is-mine" : "is-other"
 
                     return (
                         <div key={`${message.sentAt}-${message.name}-${message.text}`} className={`d-flex flex-column ${align} mb-2`}>
                             <small className="text-muted">{isMine ? "você" : message.name} · {formatTime(message.sentAt)}</small>
-                            <span className={`rounded-3 px-3 py-2 ${bubble} ${size}`} style={{ maxWidth: "75%" }}>{message.text}</span>
+                            {attack && <span className={`attack-label attack-${attack.kind}`}>{attack.label}</span>}
+                            <span className={`chat-bubble ${mineClass} ${attackClass} rounded-3 px-3 py-2 ${bubble} ${size}`} style={{ maxWidth: "75%" }}>{message.text}</span>
                         </div>
                     )
                 })}
@@ -375,7 +382,7 @@ export function ChatApp() {
                 <div ref={endRef} />
             </div>
 
-            <div className="card-footer d-flex gap-2 pb-0 border-top-0 align-items-center">
+            <div className="reactions card-footer d-flex gap-2 pb-0 border-top-0 align-items-center">
                 {EMOJIS.map(item => (
                     <button
                         key={item.emoji}
@@ -395,7 +402,7 @@ export function ChatApp() {
             </div>
 
             <div className="card-footer border-top-0 py-1 small" style={{ minHeight: "2rem" }}>
-                {typingNames.length > 0 && <span className="text-muted fst-italic">{formatTyping(typingNames)}</span>}
+                {typingNames.length > 0 && <span className="typing-notice fst-italic">{formatTyping(typingNames)}</span>}
                 {imageError && <span className="text-danger ms-2">{imageError}</span>}
                 {isSending && <span className="text-muted ms-2">Enviando imagem…</span>}
             </div>
@@ -411,10 +418,17 @@ export function ChatApp() {
                 />
                 <button className="btn btn-primary" type="submit" disabled={!isConnected}>Enviar</button>
             </form>
+
+            <p className="attack-hint mb-0 pb-2">Dica: grite kamehameha, rasengan, bankai ou "over 9000" 👀</p>
         </div>
 
         <div className="card mt-3">
-            <div className="card-header"><strong>Online agora ({online.length})</strong></div>
+            <div className="card-header">
+                <strong>Online agora ({online.length})</strong>
+                <span className={`badge power-badge ${isOver9000 ? "is-over-9000" : ""}`}>
+                    ⚡ Nível de poder: {powerLevel}{isOver9000 ? " · É OVER 9000!!!" : ""}
+                </span>
+            </div>
 
             <ul className="list-group list-group-flush">
                 {online.length === 0 && <li className="list-group-item text-muted">Ninguém por aqui ainda.</li>}
